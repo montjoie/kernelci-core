@@ -30,10 +30,11 @@
 set -e
 tag_px='kernelci/'
 
-options='npbdikqt:'
+options='npbdikqtF:'
 while getopts $options option
 do
   case $option in
+    F )  fastboot_docker=true;;
     n )  cache_args="--no-cache";;
     p )  push=true;;
     b )  builders=true;;
@@ -115,6 +116,18 @@ then
   tag=${tag_px}build-k8s
   echo_build $tag
   docker build ${quiet} ${cache_args} build-k8s -t $tag
+  if [ "x${push}" == "xtrue" ]
+  then
+    echo_push $tag
+    docker push $tag
+  fi
+fi
+
+if [ "x${fastboot_docker}" == "xtrue" ]
+then
+  tag=${tag_px}fastboot_docker
+  echo_build $tag
+  docker build ${quiet} ${cache_args} fastboot_docker -t $tag
   if [ "x${push}" == "xtrue" ]
   then
     echo_push $tag
